@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: ml-unleash
+Version: 1.0.4.1
+Summary: Deploy machine learning models to Docker
+Home-page: UNKNOWN
+Author: Dwayne Thomson
+Author-email: dwaynethomson14@gmail.com
+License: UNKNOWN
+Description: Python package for packaging and deploying machine learing models as callable endpoints in Docker containers.
+Keywords: python,docker
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Education
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: Microsoft :: Windows
