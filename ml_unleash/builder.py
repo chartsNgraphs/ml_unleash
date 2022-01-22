@@ -1,5 +1,6 @@
 import os
 from operator import mod
+import pstats
 import sys, subprocess
 from os.path import exists
 
@@ -17,21 +18,23 @@ class NoModelFileException(Error):
 
 class EntryFileNotFoundException(Error):
     """raised if the entry file, with name of 'score.py', is not found in the base directory"""
+    pass
 
 class Builder():
-    def __init__(self, model, *, requirements=None, dependencies=None):
+    def __init__(self, model, *, entry_file=None, requirements=None, dependencies=None):
         self.model_path = model
         self.requirements = requirements
         self.dependencies = dependencies
+        self.entry_file = entry_file
     
     def prepare(self):
         """this is the module that will prepare the assets for building"""
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pigar"])
-        if not exists("requirements.txt"):
+        if not exists(self.requirements):
             raise RequirementsNotExistsException("There is no file named 'requirements.txt'")
-        if not exists("*.pkl"):
+        if not exists(self.model_path):
             raise NoModelFileException("You must have a serialized model file.")
-        if not exists("score.py"):
+        if not exists(self.entry_file):
             raise EntryFileNotFoundException("An entry file named 'score.py' must be included in the base directory.")
 
     def help(self):
@@ -60,7 +63,7 @@ class Builder():
         os.rename("app.txt", "app.py")
 
     def build_image(self):
-        commands = ['FROM ubuntu:16.04', 
+        commands = ['FROM ubuntu:16.04',
         "RUN apt-get update -y && apt-get install -y python-pip python-dev python-jinja2 python-flask", 
         "WORKDIR /app",
         "RUN pip install -r requirements.txt",

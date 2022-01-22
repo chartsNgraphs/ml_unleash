@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.0.4.1'
+VERSION = '1.0.4.2'
 DESCRIPTION = 'Deploy machine learning models to Docker'
 LONG_DESCRIPTION = 'Python package for packaging and deploying machine learing models as callable endpoints in Docker containers.'
 
 # Setting up
 setup(
-       # the name must match the folder name 'ml-unleash'
+       # the name must match the folder name 'ml_unleash'
         name="ml_unleash",
         version=VERSION,
         author="Dwayne Thomson",
@@ -17,7 +17,7 @@ setup(
         install_requires=["Flask"], # add any additional packages that
         # needs to be installed along with your package. Eg: 'caer'
         
-        keywords=['python', 'docker'],
+        keywords=['python', 'docker', 'mlops'],
         classifiers=[
             "Development Status :: 3 - Alpha",
             "Intended Audience :: Education",
