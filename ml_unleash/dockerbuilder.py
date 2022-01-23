@@ -26,17 +26,14 @@ class DockerBuilder():
 
     Params:
     model (string) --> the relative filepath to the serialized model file (.pkl)
-    entry_file (string) --> the relative filepath to the entry file (score.py)
-    requirements (string) --> the relative filepath to the requirements.txt file. Include if any installs are required outside of the standard python library.
-    dependencies (string) --> the relative path to a folder containing any dependencies for your entry file
     imagename (string) --> a name for your docker container image
     
     """
-    def __init__(self, model, *, entry_file=None, requirements=None, dependencies=None, imagename="modelservice"):
+    def __init__(self, model, *, imagename="modelservice"):
         self.model_path = model
-        self.requirements = requirements
-        self.dependencies = dependencies
-        self.entry_file = entry_file
+        self.requirements = "requirements.txt"
+        self.dependencies = "dependencies"
+        self.entry_file = "score.py"
         self.imagename = imagename
         self._prepared = False
         self._api_created = False
@@ -47,7 +44,7 @@ class DockerBuilder():
         """Prepares the assets for the create_api and build_image steps."""
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pigar"])
         if not exists(self.requirements):
-            raise RequirementsNotExistsException("There is no file named 'requirements.txt'")
+            raise RequirementsNotExistsException("'requirements.txt' file not found - this file is required in working directory.")
         if not exists(self.model_path):
             raise NoModelFileException("You must have a serialized model file.")
         if not exists(self.entry_file):
