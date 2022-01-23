@@ -1,8 +1,5 @@
 import os
-from operator import mod
-import pstats
 import sys, subprocess
-from os.path import exists
 
 class Error(Exception):
     """base error class"""
@@ -27,7 +24,6 @@ class DockerBuilder():
     Params:
     model (string) --> the relative filepath to the serialized model file (.pkl)
     imagename (string) --> a name for your docker container image
-    
     """
     def __init__(self, model, *, imagename="modelservice"):
         self.model_path = model
@@ -43,15 +39,12 @@ class DockerBuilder():
     def prepare(self):
         """Prepares the assets for the create_api and build_image steps."""
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pigar"])
-        if not exists(self.requirements):
+        if not os.path.exists(self.requirements):
             raise RequirementsNotExistsException("'requirements.txt' file not found - this file is required in working directory.")
-        if not exists(self.model_path):
+        if not os.path.exists(self.model_path):
             raise NoModelFileException("You must have a serialized model file.")
-        if not exists(self.entry_file):
+        if not os.path.exists(self.entry_file):
             raise EntryFileNotFoundException("An entry file named 'score.py' must be included in the base directory.")
-
-    def help(self):
-        print(os.getcwd())
 
     def create_api(self):
         """this builds the api file"""
@@ -100,4 +93,28 @@ if __name__ == '__main__':
     
     def cleanup(self):
         """deletes temporary assets (if they exist) and leaves working directory in previous state"""
-        pass
+        if os.path.exists("dockerfile"):
+            os.remove("dockerfile")
+        if os.path.exists("app.py"):
+            os.remove("app.py")
+    
+    def do_all(self):
+        """prepares, builds, and cleans up. This is the fastest way to build your images."""
+        self.prepare()
+        self.create_api()
+        self.build_image()
+        self.cleanup()
+    
+    def run(self, port=5000):
+        """runs the container image on the specified port
+        
+        Params:
+        port (int, default=5000) --> the desired port on which to run the container."""
+        os.system(f"docker run -p {port}:{port}   {self.imagename}")
+
+    def help(self):
+        """help method for this class"""
+        print("ml_unleash")
+        print('To compile and build your invokable REST endpoint inside of a docker container, use the method "do_all"')
+        print('To complete each step individually, follow the flow of "prepare" -> "create_api" -> "build_image" -> "cleanup"')
+        print('To run the image, use the method "run", and pass the desired port (or leave blank to use localhost:5000)')
