@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 VERSION = '1.0.4.2'
 DESCRIPTION = 'Deploy machine learning models to Docker'
-LONG_DESCRIPTION = 'Python package for packaging and deploying machine learing models as callable endpoints in Docker containers.'
+LONG_DESCRIPTION = 'Python package for packaging and deploying machine learning models as invokable endpoints in Docker containers.'
 
 # Setting up
 setup(
