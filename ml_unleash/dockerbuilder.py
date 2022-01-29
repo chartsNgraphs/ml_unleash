@@ -17,6 +17,14 @@ class EntryFileNotFoundException(Error):
     """raised if the entry file, with name of 'score.py', is not found in the base directory"""
     pass
 
+class AppFileAlreadyExistsException(Error):
+    """raised if a file by the name of app.py is found in the target directory"""
+    pass
+
+class DockerfileAlreadyExistsException(Error):
+    """raised if a dockerfile ('dockerfile') already exists in the target directory."""
+    pass
+
 class DockerBuilder():
     """
     Prepares required assets and builds a  docker image, with web service, to serve a machine learning model.
@@ -45,6 +53,10 @@ class DockerBuilder():
             raise NoModelFileException("You must have a serialized model file.")
         if not os.path.exists(self.entry_file):
             raise EntryFileNotFoundException("An entry file named 'score.py' must be included in the base directory.")
+        if os.path.exists("app.py"):
+            raise AppFileAlreadyExistsException("There is already a file by the name of 'app.py' in your target directory. Please delete or rename this file, then run the command again.")
+        if os.path.exists('dockerfile'):
+            raise DockerfileAlreadyExistsException("There is already a file by the name of 'dockerfile' in the target directory. Please delete this file and try the command again")
 
     def create_api(self):
         """this builds the api file"""
@@ -74,16 +86,17 @@ if __name__ == '__main__':
         Params:
         imagename (string) --> the name you wish to use for the newly-created container image
         """
-        commands = ['FROM ubuntu:16.04' + "\n",
-        "RUN apt-get update -y && apt-get install -y python-pip python-dev python-jinja2 python-flask" + "\n",
+        commands = ['FROM ubuntu' + "\n",
+        "RUN apt-get update -y && apt-get install -y python3-pip python3-dev python3-jinja2 python3-flask" + "\n",
         "COPY ./requirements.txt /app/requirements.txt" + "\n",
         "WORKDIR /app" + "\n",
+        "RUN pip install --upgrade setuptools" + "\n",
         "RUN pip install -r requirements.txt" + "\n",
         "COPY {} /app".format(self.entry_file) + "\n",
         "COPY {} /app".format(self.model_path) + "\n",
         "COPY {} /app".format(self.requirements) + "\n",
         "COPY ./app.py /app" +"\n",
-        'ENTRYPOINT [ "python" ]' + "\n",
+        'ENTRYPOINT [ "python3" ]' + "\n",
         'CMD [ "app.py" ]' + "\n"]
 
         with open("dockerfile", 'w') as f:
