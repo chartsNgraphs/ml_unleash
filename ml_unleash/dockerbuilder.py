@@ -74,7 +74,8 @@ def score_model():
 
 if __name__ == '__main__':
     #run the app
-    app.run(host='0.0.0.0', debug=True)"""
+    from waitress import serve
+    serve(app, host='0.0.0.0', port=8080)"""
 
         with open("app.txt", 'w') as f:
             f.write(api_constant)
@@ -91,6 +92,7 @@ if __name__ == '__main__':
         "COPY ./requirements.txt /app/requirements.txt" + "\n",
         "WORKDIR /app" + "\n",
         "RUN pip install --upgrade setuptools" + "\n",
+        "RUN pip install waitress" + "\n",
         "RUN pip install -r requirements.txt" + "\n",
         "COPY {} /app".format(self.entry_file) + "\n",
         "COPY {} /app".format(self.model_path) + "\n",
