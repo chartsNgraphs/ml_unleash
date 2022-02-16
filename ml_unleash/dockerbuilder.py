@@ -75,7 +75,7 @@ def score_model():
 if __name__ == '__main__':
     #run the app
     from waitress import serve
-    serve(app, host='0.0.0.0', port=8080)"""
+    serve(app, host='0.0.0.0')"""
 
         with open("app.txt", 'w') as f:
             f.write(api_constant)
