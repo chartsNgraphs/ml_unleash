@@ -33,7 +33,7 @@ class DockerBuilder():
     model (string) --> the relative filepath to the serialized model file (.pkl)
     imagename (string) --> a name for your docker container image
     """
-    def __init__(self, model, *, imagename="modelservice"):
+    def __init__(self, model, *, imagename="modelservice", port=8080):
         self.model_path = model
         self.requirements = "requirements.txt"
         self.dependencies = "dependencies"
@@ -43,6 +43,7 @@ class DockerBuilder():
         self._api_created = False
         self._image_built = False
         self._cleanup_executed = False
+        self._port = port
     
     def prepare(self):
         """Prepares the assets for the create_api and build_image steps."""
@@ -75,7 +76,7 @@ def score_model():
 if __name__ == '__main__':
     #run the app
     from waitress import serve
-    serve(app, host='0.0.0.0')"""
+    serve(app, host='0.0.0.0', port={})""".format(str(self._port))
 
         with open("app.txt", 'w') as f:
             f.write(api_constant)
@@ -120,14 +121,15 @@ if __name__ == '__main__':
         self.build_image()
         self.cleanup()
     
-    def run(self, port=8080):
+    def run(self):
         """runs the container image on the specified port
         
         Params:
         port (int, default=8080) --> the desired port on which to run the container."""
-        os.system(f"docker run -p {port}:{port}   {self.imagename}")
+        os.system(f"docker run -p {self._port}:{self._port}   {self.imagename}")
 
-    def help(self):
+    @staticmethod
+    def help():
         """help method for this class"""
         print("ml_unleash")
         print('To compile and build your invokable REST endpoint inside of a docker container, use the method "do_all"')
