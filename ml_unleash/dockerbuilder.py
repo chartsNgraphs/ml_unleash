@@ -136,10 +136,7 @@ if __name__ == '__main__':
         self.cleanup()
 
     def run(self):
-        """runs the container image on the specified port
-
-        Params:
-        port (int, default=8080) --> the desired port on which to run the container."""
+        """runs the container image on the port specified in self.port"""
         os.system(f"docker run -p {self._port}:{self._port}   {self.imagename}")
 
     @staticmethod
@@ -148,7 +145,7 @@ if __name__ == '__main__':
         print("ml_unleash")
         print('To compile and build your invokable REST endpoint inside of a docker container, use the method "do_all"')
         print('To complete each step individually, use these methods in sequence: "prepare" -> "create_api" -> "build_image" -> "cleanup"')
-        print('To run the image, use the method "run", and pass the desired port (or leave blank to use localhost:5000)')
+        print('To run the image, use the method "run"')
 
         print("\n")
         print("methods: [prepare, create_api, build_image, cleanup, do_all, run]")
