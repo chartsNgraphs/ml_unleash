@@ -32,8 +32,9 @@ class DockerBuilder():
     Params:
     model (string) --> the relative filepath to the serialized model file (.pkl)
     imagename (string) --> a name for your docker container image
+    port (int) --> the port on which the service should run within the container. This same port should be used when calling 'docker run' on the image.
     """
-    def __init__(self, model, *, imagename="modelservice"):
+    def __init__(self, model, *, imagename="modelservice", port=8080):
         self.model_path = model
         self.requirements = "requirements.txt"
         self.dependencies = "dependencies"
@@ -43,7 +44,21 @@ class DockerBuilder():
         self._api_created = False
         self._image_built = False
         self._cleanup_executed = False
+        self._port = port
+
+    @property
+    def port(self):
+        """returns port property"""
+        return self._port
     
+    @port.setter
+    def port(self, value):
+        """sets a new port value. image must be rebuilt after changing port for this to have any effect.
+        
+        params:
+        port (int) --> integer value of desired port"""
+        self._port = value
+
     def prepare(self):
         """Prepares the assets for the create_api and build_image steps."""
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pigar"])
@@ -75,7 +90,7 @@ def score_model():
 if __name__ == '__main__':
     #run the app
     from waitress import serve
-    serve(app, host='0.0.0.0')"""
+    serve(app, host='0.0.0.0', port={})""".format(str(self._port))
 
         with open("app.txt", 'w') as f:
             f.write(api_constant)
@@ -103,36 +118,34 @@ if __name__ == '__main__':
 
         with open("dockerfile", 'w') as f:
             f.writelines(commands)
-        
+
         print(os.system("docker build -t {}:latest .".format(self.imagename)))
-    
+
     def cleanup(self):
         """deletes temporary assets (if they exist) and leaves working directory in previous state"""
         if os.path.exists("dockerfile"):
             os.remove("dockerfile")
         if os.path.exists("app.py"):
             os.remove("app.py")
-    
+
     def do_all(self):
         """prepares, builds, and cleans up. This is the fastest way to build your images."""
         self.prepare()
         self.create_api()
         self.build_image()
         self.cleanup()
-    
-    def run(self, port=8080):
-        """runs the container image on the specified port
-        
-        Params:
-        port (int, default=8080) --> the desired port on which to run the container."""
-        os.system(f"docker run -p {port}:{port}   {self.imagename}")
 
-    def help(self):
+    def run(self):
+        """runs the container image on the port specified in self.port"""
+        os.system(f"docker run -p {self._port}:{self._port}   {self.imagename}")
+
+    @staticmethod
+    def help():
         """help method for this class"""
         print("ml_unleash")
         print('To compile and build your invokable REST endpoint inside of a docker container, use the method "do_all"')
         print('To complete each step individually, use these methods in sequence: "prepare" -> "create_api" -> "build_image" -> "cleanup"')
-        print('To run the image, use the method "run", and pass the desired port (or leave blank to use localhost:5000)')
+        print('To run the image, use the method "run"')
 
         print("\n")
         print("methods: [prepare, create_api, build_image, cleanup, do_all, run]")
