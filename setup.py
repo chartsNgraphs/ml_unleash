@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.1.0.0'
+VERSION = '1.1.0.3'
 DESCRIPTION = 'Package and run machine learning models as docker containers.'
 LONG_DESCRIPTION = 'Python package for packaging and deploying machine learning models as invokable endpoints in Docker containers.'
 
