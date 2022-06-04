@@ -103,10 +103,12 @@ if __name__ == '__main__':
         imagename (string) --> the name you wish to use for the newly-created container image
         """
         commands = ['FROM ubuntu' + "\n",
+        "ENV DEBIAN_FRONTEND noninteractive" + "\n",
         "RUN apt-get update -y && apt-get install -y python3-pip python3-dev python3-jinja2 python3-flask" + "\n",
         "COPY ./requirements.txt /app/requirements.txt" + "\n",
         "WORKDIR /app" + "\n",
         "RUN pip install --upgrade setuptools" + "\n",
+        "RUN pip install --upgrade wheel" + "\n",
         "RUN pip install waitress" + "\n",
         "RUN pip install -r requirements.txt" + "\n",
         "COPY {} /app".format(self.entry_file) + "\n",
